@@ -1,0 +1,243 @@
+Hi I Need help with a problem. All I would like to do is have a listbox click on the item in the listbox hit the Delete button, and have it Deleted form the sqlit3 Database.
+For some resone my friend and I can't get it to work. PLZ Help US
+
+
+
+
+
+
+from tkinter import *
+from tkinter.font import Font
+import sqlite3
+
+root=Tk()
+root.title("Factions")
+root.configure(bg='gray')
+frame=LabelFrame(root,bg='gray',bd=5)
+frame.grid(row=1,column=2,pady=(9,0))
+Font20=Font(
+	family="Jim Nightshade",
+	size=20,)
+Font10=Font(
+	family="Jim Nightshade",
+	size=13,
+	weight='bold')
+
+
+
+
+#Database------------------------------------------------------------
+
+conn = sqlite3.connect('DnD towns.db')
+c = conn.cursor()
+'''
+c.execute("""CREATE TABLE DnD (
+		Faction_Entry text,
+		Town_Entry text,
+		Headoftown_Entry text
+		)""")
+c.execute("""CREATE TABLE Notes( Town notes text )""")
+'''
+
+def Notes():
+
+	conn = sqlite3.connect('DnD towns.db')
+	c = conn.cursor()
+
+	Notes=Tk()
+	Notes.title("Notes")
+	Notes.configure(bg='black')
+	Fontnotes=Font(
+		family="Jim Nightshade",
+		size=13,
+		weight='bold')
+
+	def Note_save():
+
+		conn = sqlite3.connect('DnD towns.db')
+		c = conn.cursor()
+
+		c.execute("INSERT INTO Town notes VALUES (:Note_Text)",
+			{"Note_Text":Note_Text.get(index="END")
+			})
+
+		Note_Entry.Delete(0, END)
+		conn.commit()
+		conn.close()
+
+	NotesL1=Label(Notes,text=mylist.get(ANCHOR),fg='#ff5f00',bg='black',font=Fontnotes)
+	NotesL1.grid(row=1,column=1)
+
+	Note_Text=Text(Notes,height=15,width=20,bg="black",fg="#ff5f00",insertbackground='#ff5f00',font=20,bd=-1,wrap=WORD)
+	Note_Text.grid(row=2,column=1,pady=15,padx=15)
+
+	Save_Button=Button(Notes,text='Save',pady=15,padx=15,font=20,bg="black",fg='#ff5f00',activebackground='black',bd=-1,command=Note_save)
+	Save_Button.grid(row=3,column=1,pady=15)
+
+	conn.commit()
+	conn.close()
+
+def Delete():
+	x = mylist.curselection()[0]
+	mylist.delete(x)
+
+
+#def Delete():
+	#conn = sqlite3.connect('DnD towns.db')
+	#c = conn.cursor()
+
+	#c.execute("DELETE from DnD ")
+	#c.execute("DELETE from DnD WHERE oid= "+ mylist.get(ANCHOR))
+	#mylist.delete(0, END)
+
+
+	#conn.commit()
+	#conn.close()
+
+
+
+#Save Function
+def Save():
+	conn = sqlite3.connect('DnD towns.db')
+	c = conn.cursor()
+
+	if var.get() == 1:
+		Faction_name="Union"
+	elif var2.get() == 1:
+		Faction_name="Elves"
+	elif var4.get() == 1:
+		Faction_name="Player"
+	else:
+		Faction_name="Unaligned"
+	
+	c.execute("INSERT INTO DnD VALUES  (:Faction_Entry, :Town_Entry, :Headoftown_Entry )",
+			{
+			"Faction_Entry":Faction_name,
+			"Town_Entry":Town_Entry.get(),
+			"Headoftown_Entry":Headoftown_Entry.get()
+			})
+
+	Faction_Entry.deselect()
+	Faction_Entry2.deselect()
+	#Faction_Entry3.deselect()
+	Faction_Entry4.deselect()
+	Town_Entry.delete(0,END)
+	Headoftown_Entry.delete(0,END)
+	mylist.delete(0, END)
+
+	conn.commit()
+	conn.close()
+
+	conn = sqlite3.connect('Dnd towns.db')
+	c = conn.cursor()
+
+	c.execute("SELECT *,oid FROM DnD")
+	rows=c.fetchall()
+	doggy=1
+	for row in rows:
+		print_row = str(row[0]) + ",  " + str(row[1]) + ",  " + str(row[2]) +"." + "\n"
+		mylist.insert(doggy, print_row)
+		doggy=doggy+1
+		
+	conn.commit()
+	conn.close()
+#+ ",  " + str(row[3])
+
+#Reset Function
+def Reset():
+	conn = sqlite3.connect('Dnd towns.db')
+	c = conn.cursor()
+	mylist.delete(0, END)
+	c.execute("SELECT *,oid FROM DnD")
+	rows=c.fetchall()
+	doggy=1
+	for row in rows:
+		print_row = str(row[0]) + ",  " + str(row[1]) + ",  " + str(row[2]) + "." + "\n"
+		mylist.insert(doggy, print_row)
+		doggy=doggy+1
+
+	Faction_Entry.deselect()
+	Faction_Entry2.deselect()
+	#Faction_Entry3.deselect()
+	Faction_Entry4.deselect()
+	Town_Entry.delete(0,END)
+	Headoftown_Entry.delete(0,END)
+	
+	conn.commit()
+	conn.close()
+
+
+var = IntVar()
+Faction_Entry=Checkbutton(frame, text="Union       ",font=Font10,variable=var,bg='gray',activebackground="gray",fg="#a8372f",onvalue=1,offvalue=0)
+Faction_Entry.deselect()
+
+var2 = IntVar()
+Faction_Entry2=Checkbutton(frame, text="Elves  ",font=Font10,variable=var2,bg='gray',activebackground="gray",fg="#b3a622")
+Faction_Entry2.deselect()
+
+#var3 = IntVar()
+#Faction_Entry3=Checkbutton(frame, text="Unaligned",font=Font10,variable=var3,bg='gray',activebackground="gray")
+#Faction_Entry3.deselect()
+
+var4 = IntVar()
+Faction_Entry4=Checkbutton(frame, text="Player",font=Font10,variable=var4,bg='gray',activebackground="gray",fg="#22abb3")
+Faction_Entry4.deselect()
+
+Faction_Entry.grid(row=1,column=1,pady=(0,0),padx=(0,0))
+Faction_Entry2.grid(row=1,column=2,pady=(0,0),padx=(0,0))
+#Faction_Entry3.grid(row=2,column=1,pady=(0,0),padx=(0,0))
+Faction_Entry4.grid(row=2,column=2,pady=(0,0),padx=(0,0))
+
+Faction_name = Label(root,text="Factions",font=Font20,bg='gray')
+Faction_name.grid(row=1,column=1,pady=(0,0),padx=(0,0))
+
+Town_Entry = Entry(root,width=20,bd=2,font=Font10)
+Town_Entry.grid(row=3,column=2,pady=(0,0),padx=(0,0))
+
+Town_name = Label(root,text="Town",font=Font20,bg='gray')
+Town_name.grid(row=3,column=1,pady=(0,0),padx=(0,0))
+
+Headoftown_Entry = Entry(root,width=20,bd=2,font=Font10)
+Headoftown_Entry.grid(row=4,column=2)
+
+Headoftown_name = Label(root,text="Head of town",font=Font20,bg='gray')
+Headoftown_name.grid(row=4,column=1)
+
+scroll_bar = Scrollbar(root,bd=2)
+scroll_bar.grid(row=1,rowspan=50,column=4,sticky=N,ipady=104,pady=(15,5))
+
+mylist=Listbox(root,font=Font10,bd=3,height=10,width=30 ,yscrollcommand=scroll_bar.set,bg='gray',selectbackground='gray')
+mylist.grid(row=1,rowspan=5,column=3,pady=15,padx=5)
+
+Button_save=Button(root,text='Save',padx=19,command=Save)
+Button_save.grid(row=5,column=2,pady=5)
+
+Button_Reset=Button(root,text='Reset',padx=18,command=Reset)
+Button_Reset.grid(row=5,column=1,pady=5)
+
+Button_Notes=Button(root,text='Notes',padx=15,command=Notes)
+Button_Notes.grid(row=6,column=2,pady=5)
+
+Button_Delete=Button(root,text='Delete',padx=15,command=Delete)
+Button_Delete.grid(row=6,column=1,pady=5)
+
+
+
+
+conn = sqlite3.connect('Dnd towns.db')
+c = conn.cursor()
+
+c.execute("SELECT *,oid FROM DnD")
+rows=c.fetchall()
+doggy=1
+for row in rows:
+	print_row = str(row[0]) + ",  " + str(row[1]) + ",  " + str(row[2]) +"." + "\n"
+	mylist.insert(doggy, print_row)
+	doggy=doggy+1
+		
+
+
+conn.commit()
+conn.close()
+
+root.mainloop()
