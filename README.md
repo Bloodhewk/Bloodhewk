@@ -1,0 +1,3 @@
+- 👋 Hi, I’m @Bloodhewk
+- 👀 I’m interested in Python and Python related things
+- 🌱 I’m currently learning ... More Python
